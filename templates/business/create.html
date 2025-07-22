@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}SortMyEntries{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="p-4" style="width: 90%; max-width: 900px;">
+        <form method="POST" action="/create" enctype="multipart/form-data">
+            <h4 class="text-center mb-4">1. Event Details</h4>
+            <div class="mb-3">
+                <label for="flyer" class="form-label">Event Flyer:</label>
+                <input type="file" class="form-control" id="flyer" name="flyer" accept="image/*" required />
+            </div>
+            <div class="mb-3">
+                <label for="event_name" class="form-label">Event Name:</label>
+                <input type="text" class="form-control" id="event_name" name="event_name" required />
+            </div>
+            <div class="mb-3">
+                <label for="event_name" class="form-label">Event Description:</label>
+                <textarea class="form-control" name="description" rows="3"
+                    placeholder="Describe your event upto 150 characters" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="categories" class="form-label">Event Category:</label>
+                <select id="categories" name="categories" class="form-control" required>
+                    <option disabled selected>Select Category</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="sports-fitness">Sports & Fitness</option>
+                    <option value="business-professional">Business & Professional</option>
+                    <option value="education-learning">Education & Learning</option>
+                    <option value="arts-culture">Arts & Culture</option>
+                    <option value="family-kids">Family & Kids</option>
+                    <option value="technology">Technology</option>
+                    <option value="food-drink">Food & Drink</option>
+                    <option value="health-wellness">Health & Wellness</option>
+                    <option value="community-social">Community & Social</option>
+                    <option value="outdoor-adventure">Outdoor & Adventure</option>
+                    <option value="nightlife">Nightlife</option>
+                    <option value="charity-causes">Charity & Causes</option>
+                    <option value="religious-spiritual">Religious & Spiritual</option>
+                    <option value="automotive">Automotive</option>
+                    <option value="travel-tourism">Travel & Tourism</option>
+                    <option value="fashion-beauty">Fashion & Beauty</option>
+                    <option value="government-politics">Government & Politics</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="gaming-esports">Gaming & Esports</option>
+                    <option value="seasonal-holiday">Seasonal & Holiday</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-center mb-2">
+                <button type="submit" class="btn btn-primary btn-sm px-5 py-2 fs-8">Save & Next</button>
+            </div>
+
+        </form>
+
+
+    </div>
+</div>
+
+{% endblock %}

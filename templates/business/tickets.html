@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}SortMyEntries{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+  <div class="p-4" style="width: 90%; max-width: 900px;">
+    <form method="POST" action="/create/schedule/tickets">
+      <h4 class="text-center mb-5">3. Tickets Details</h4>
+
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" id="applyToAll" onclick="applyToAllTickets()" />
+        <label class="form-check-label" for="applyToAll">
+          Apply same ticket details to all venues
+        </label>
+      </div>
+
+      {% for schedule in schedules %}
+      <div class="venue-ticket-section mb-5">
+        <h5 class="mb-3 text-center">
+          Tickets for {{ schedule.venue_name }}, {{ schedule.venue_city }} on {{ schedule.date.strftime('%d %b, %Y') }}
+        </h5>
+
+        <div class="schedule-container">
+          <div class="schedule-block border rounded p-3 mb-3 position-relative">
+            <div class="mb-3">
+              <label class="form-label">Ticket Type:</label>
+              <input type="text" class="form-control ticket-type" name="ticket_type_{{ schedule.id }}[]" placeholder="e.g. VIP, General, Student" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Price (₹):</label>
+              <input type="number" class="form-control ticket-price" name="price_{{ schedule.id }}[]" step="0.01" min="0" placeholder="e.g. 499.00" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Total Quantity:</label>
+              <input type="number" class="form-control ticket-quantity" name="total_quantity_{{ schedule.id }}[]" min="1" placeholder="e.g. 100" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description (optional):</label>
+              <textarea class="form-control ticket-description" name="description_{{ schedule.id }}[]" rows="2" placeholder="Any additional info about the ticket..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <button type="button" class="btn btn-outline-dark" onclick="addCategory(this)">
+            <i class="bi bi-plus-circle me-2"></i> Add Category
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="d-flex justify-content-end mb-2">
+        <button type="submit" class="btn btn-primary btn-sm px-5 py-2 fs-5">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  const applyToAllCheckbox = document.getElementById('applyToAll');
+
+  function syncAllTicketBlocks() {
+    const apply = applyToAllCheckbox.checked;
+    const allSections = document.querySelectorAll('.venue-ticket-section');
+
+    // remove all blocks from other sections
+    for (let i = 1; i < allSections.length; i++) {
+      const container = allSections[i].querySelector('.schedule-container');
+      container.innerHTML = '';
+    }
+
+    // clone all blocks from first section to others
+    const sourceBlocks = allSections[0].querySelectorAll('.schedule-block');
+
+    for (let i = 1; i < allSections.length; i++) {
+      const container = allSections[i].querySelector('.schedule-container');
+
+      sourceBlocks.forEach(block => {
+        const clone = block.cloneNode(true);
+
+        // Remove existing delete buttons
+        const del = clone.querySelector('.btn-danger');
+        if (del) del.remove();
+
+        // Sync values
+        clone.querySelectorAll('input, textarea').forEach(el => {
+          el.value = el.value; // no-op to ensure copy
+        });
+
+        container.appendChild(clone);
+      });
+    }
+  }
+
+  applyToAllCheckbox.addEventListener('change', () => {
+    if (applyToAllCheckbox.checked) {
+      syncAllTicketBlocks();
+    }
+  });
+
+  // Sync updates in real-time
+  document.addEventListener('input', function (e) {
+    if (!applyToAllCheckbox.checked) return;
+
+    // Only sync if input was inside first venue section
+    const section = e.target.closest('.venue-ticket-section');
+    const allSections = document.querySelectorAll('.venue-ticket-section');
+
+    if (section && section === allSections[0]) {
+      syncAllTicketBlocks();
+    }
+  });
+
+  function addCategory(button) {
+    const container = button.closest('.venue-ticket-section').querySelector('.schedule-container');
+    const firstBlock = container.querySelector('.schedule-block');
+    const clone = firstBlock.cloneNode(true);
+
+    // Clear values
+    clone.querySelectorAll('input, textarea').forEach(input => input.value = '');
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0 m-2';
+    deleteBtn.innerHTML = 'Delete';
+    deleteBtn.onclick = () => clone.remove();
+    clone.appendChild(deleteBtn);
+
+    container.appendChild(clone);
+
+    if (applyToAllCheckbox.checked) {
+      syncAllTicketBlocks();
+    }
+  }
+
+  window.addCategory = addCategory;
+</script>
+{% endblock %}
+
